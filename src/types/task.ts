@@ -1,6 +1,5 @@
 export type TaskStatus = "pending" | "in-progress" | "paused" | "done" | string;
 
-
 export type Task = {
     id: string;
     status: TaskStatus;
@@ -19,3 +18,5 @@ export type ServerTask = {
     description?: string;
     result?: unknown;
 };
+
+export type Credentials = { username: string; password: string };

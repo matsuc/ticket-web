@@ -7,6 +7,11 @@ export type StartTaskInput = {
   duration: number; // minutes or your backend contract
 };
 
+export type LoginInput = {
+  username: string;
+  password: string;
+};
+
 
 export function getErrorMessage(err: unknown): string {
   if (err instanceof Error) return err.message;
@@ -15,6 +20,18 @@ export function getErrorMessage(err: unknown): string {
   } catch {
     return String(err);
   }
+}
+
+export async function apiLogin(body: LoginInput): Promise<{ success: boolean } & Record<string, unknown>> {
+  const res = await fetch(`${BASE}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Login failed. Please check your credentials.`);
+  let data: unknown = null;
+  try { data = await res.json(); } catch { /* empty body */ }
+  return { success: true, ...(typeof data === "object" && data ? (data as Record<string, unknown>) : {}) };
 }
 
 export async function apiStartTask(
@@ -67,6 +84,6 @@ export async function apiAvailableCourts(
     body: JSON.stringify(body),
   });
   // console.log("apiAvailableCourts", await res.json());
-  if (!res.ok) throw new Error(`Login failed. Please check your credentials.`);
+  if (!res.ok) throw new Error(`available_courts failed: ${res.status}`);
   return res.json();
 }

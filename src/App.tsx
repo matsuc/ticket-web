@@ -2,8 +2,10 @@ import { useState } from "react";
 import StartTaskPage from "./pages/StartTaskPage";
 import TaskStatusPage from "./pages/TaskStatusPage";
 import ProgressTasksPage from "./pages/ProgressTasksPage";
+import LoginPage from "./pages/LoginPage";
 import type { Task } from "./types/task";
 import { useLocalTasks } from "./hooks/useLocalTasks";
+import { loadCreds } from "./utils/storage";
 
 const PAGES = ["Start task", "Task status", "All progress tasks"] as const;
 type Page = typeof PAGES[number];
@@ -11,6 +13,7 @@ type Page = typeof PAGES[number];
 export default function App() {
   const [page, setPage] = useState<Page>("Start task");
   const { tasks, setTasks } = useLocalTasks();
+  const [loggedIn, setLoggedIn] = useState(() => !!loadCreds());
 
   function addTask(t: Task) {
     setTasks(prev => [t, ...prev]);
@@ -30,6 +33,34 @@ export default function App() {
     if (confirm("This will delete ALL tasks locally (server tasks remain). Continue?")) setTasks([]);
   }
 
+  // function handleLogout() {
+  //   clearCreds();
+  // }
+
+
+  // If not logged in, show ONLY the Login page (no tabs), and gate everything else
+  if (!loggedIn) {
+    return (
+      <div>
+        <header className="app-header">
+          <div className="header-brand">
+            <div className="header-logo">TM</div>
+            <div style={{ fontWeight: 700 }}>Ticket Superman</div>
+          </div>
+          {/* No navbar when unauthenticated */}
+        </header>
+        <main className="container">
+          <LoginPage onLoggedIn={() => setLoggedIn(true)} />
+        </main>
+        <footer className="container footer">
+          <span>Login required</span>
+          <span>© {new Date().getFullYear()} Ticket Superman</span>
+        </footer>
+      </div>
+    );
+  }
+
+  
   return (
     <div>
       <header className="app-header">
