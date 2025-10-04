@@ -5,14 +5,12 @@ import type { Task } from "../types/task";
 import { apiAvailableCourts, apiStartTask, type StartTaskInput, getErrorMessage } from "../services/api";
 
 export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => void }) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [form, setForm] = useState<StartTaskInput>({ username: "", password: "", target_date: "", duration: 60 });
+  const [form, setForm] = useState<StartTaskInput>({ username: "@gmail.com", password: "", target_date: "2025-10-01T12:00:00", duration: 120 });
   const [loading, setLoading] = useState(false);
   const [courts, setCourts] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const canCreate = title.trim().length > 0 && !!form.username && !!form.password && !!form.target_date && !!form.duration;
+  const canCreate = !!form.username && !!form.password && !!form.target_date && !!form.duration;
 
   async function handleCreate() {
     if (!canCreate) return;
@@ -22,15 +20,13 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
       const now = Date.now();
       const task: Task = {
         id: task_id,
-        title: title.trim() || `Task ${task_id}`,
-        description: description.trim() || undefined,
         status: "pending",
-        progress: 0,
+        target_date: form.target_date,
+        duration: form.duration,
         createdAt: now,
         updatedAt: now,
       };
       onCreate(task);
-      setTitle(""); setDescription("");
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     } finally {
@@ -42,7 +38,7 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
     setLoading(true); setError(null); setCourts(null);
     try {
       const res = await apiAvailableCourts(form);
-      setCourts(res.courts || []);
+      setCourts(res.available_courts || []);
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     } finally {
@@ -51,18 +47,10 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
   }
 
   return (
-    <div className="grid" style={{ gridTemplateColumns: "2fr 1fr", gap: 16 }}>
+    <div className="grid" style={{ gap: 16 }}>
       <Card>
         <h2 style={{ marginTop: 0 }}>Start a Task (via API)</h2>
-        <div className="grid" style={{ gap: 10 }}>
-          <label>
-            <div className="small">Title</div>
-            <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g., Reserve court checker" />
-          </label>
-          <label>
-            <div className="small">Description</div>
-            <textarea className="textarea" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Optional details..." />
-          </label>
+        <div className="grid" style={{ gap: 10, maxWidth: 900 }}>
 
           <div className="grid cols-2">
             <label>
@@ -77,8 +65,8 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
 
           <div className="grid cols-2">
             <label>
-              <div className="small">Target date (YYYY-MM-DD)</div>
-              <input className="input" placeholder="2025-10-04" value={form.target_date} onChange={(e) => setForm({ ...form, target_date: e.target.value })} />
+              <div className="small">Target date (YYYY-MM-DDTHH:mm:ss)</div>
+              <input className="input" value={form.target_date} onChange={(e) => setForm({ ...form, target_date: e.target.value })} />
             </label>
             <label>
               <div className="small">Duration</div>
@@ -96,22 +84,11 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
             <div>
               <div className="small" style={{ marginBottom: 6 }}>Available courts:</div>
               {courts.length === 0 ? <div className="small">No courts found.</div> : (
-                <ul style={{ margin: 0, paddingLeft: 18 }}>
-                  {courts.map((c, idx) => <li key={idx}>{c}</li>)}
-                </ul>
+                <div className="small">{courts.join("、")}</div>
               )}
             </div>
           )}
         </div>
-      </Card>
-
-      <Card>
-        <h3 style={{ marginTop: 0 }}>Tips</h3>
-        <ul style={{ margin: 0, paddingLeft: 18, color: "#555" }}>
-          <li>Creating a task calls <span className="kbd">POST /start_task</span> and stores the returned <code>task_id</code>.</li>
-          <li>Use <em>Task status</em> to fetch latest status for each known task.</li>
-          <li><span className="kbd">Check available courts</span> calls <span className="kbd">POST /available_courts</span>.</li>
-        </ul>
       </Card>
     </div>
   );

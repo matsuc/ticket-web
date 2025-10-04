@@ -25,7 +25,8 @@ export default function ProgressTasksPage({ tasks, onUpdate }: { tasks: Task[]; 
     }
   }
 
-  useEffect(() => { refreshServer(); });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {refreshServer();}, []);
 
   return (
     <div className="grid" style={{ gap: 16 }}>

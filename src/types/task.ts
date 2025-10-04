@@ -3,10 +3,10 @@ export type TaskStatus = "pending" | "in-progress" | "paused" | "done" | string;
 
 export type Task = {
     id: string;
-    title: string;
-    description?: string;
     status: TaskStatus;
-    progress: number; // 0..100
+    target_date: string; // YYYY-MM-DDTHH:MM:SS
+    duration: number;
+    result?: string;
     createdAt: number;
     updatedAt: number;
 };

@@ -1,12 +1,11 @@
 import { useState } from "react";
 import StartTaskPage from "./pages/StartTaskPage";
 import TaskStatusPage from "./pages/TaskStatusPage";
-import DeleteTaskPage from "./pages/DeleteTaskPage";
 import ProgressTasksPage from "./pages/ProgressTasksPage";
 import type { Task } from "./types/task";
 import { useLocalTasks } from "./hooks/useLocalTasks";
 
-const PAGES = ["Start task", "Task status", "Delete task", "All progress tasks"] as const;
+const PAGES = ["Start task", "Task status", "All progress tasks"] as const;
 type Page = typeof PAGES[number];
 
 export default function App() {
@@ -36,7 +35,7 @@ export default function App() {
       <header className="app-header">
         <div className="header-brand">
           <div className="header-logo">TM</div>
-          <div style={{ fontWeight: 700 }}>Task Manager</div>
+          <div style={{ fontWeight: 700 }}>Ticket Superman</div>
         </div>
         <nav className="navbar">
           {PAGES.map(p => (
@@ -51,9 +50,8 @@ export default function App() {
       <main className="container">
         {page === "Start task" && <StartTaskPage onCreate={addTask} />}
         {page === "Task status" && (
-          <TaskStatusPage tasks={tasks} onUpdate={updateTask} onBulk={bulkUpdate} />
+          <TaskStatusPage tasks={tasks} onUpdate={updateTask} onBulk={bulkUpdate} onDelete={deleteTask} />
         )}
-        {page === "Delete task" && <DeleteTaskPage tasks={tasks} onDelete={deleteTask} />}
         {page === "All progress tasks" && (
           <ProgressTasksPage tasks={tasks} onUpdate={updateTask} />
         )}

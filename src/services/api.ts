@@ -31,7 +31,7 @@ export async function apiStartTask(
 
 export async function apiTaskStatus(
   task_id: string
-): Promise<{ status: string; result?: unknown }> {
+): Promise<{ status: string; result?: string }> {
   const res = await fetch(`${BASE}/task_status/${encodeURIComponent(task_id)}`);
   if (!res.ok) throw new Error(`task_status failed: ${res.status}`);
   return res.json();
@@ -54,17 +54,19 @@ export async function apiAllProgressTasks(): Promise<
 > {
   const res = await fetch(`${BASE}/all_progress_tasks`);
   if (!res.ok) throw new Error(`all_progress_tasks failed: ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  return data.progress_tasks;
 }
 
 export async function apiAvailableCourts(
   body: StartTaskInput
-): Promise<{ courts: string[] }> {
+): Promise<{ available_courts: string[] }> {
   const res = await fetch(`${BASE}/available_courts`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`available_courts failed: ${res.status}`);
+  // console.log("apiAvailableCourts", await res.json());
+  if (!res.ok) throw new Error(`Login failed. Please check your credentials.`);
   return res.json();
 }
