@@ -10,9 +10,10 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
   const [form, setForm] = useState<StartTaskInput>({ user_id: creds?.user_id || "", target_date: "2025-10-01T12:00:00", duration: 120 });
   const [loading, setLoading] = useState(false);
   const [courts, setCourts] = useState<string[] | null>(null);
+  const [hasCourtsChecked, setHasCourtsChecked] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canCreate = !!form.target_date && !!form.duration;
+  const canCreate = !!form.target_date && !!form.duration && hasCourtsChecked;
 
   async function handleCreate() {
     if (!canCreate) return;
@@ -41,6 +42,7 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
     try {
       const res = await apiAvailableCourts(form);
       setCourts(res.available_courts || []);
+      setHasCourtsChecked(res.available_courts && res.available_courts.length > 0);
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     } finally {
@@ -67,7 +69,7 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
 
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <Button variant="primary" disabled={!canCreate || loading} onClick={handleCreate}>{loading ? "Working..." : "Create task"}</Button>
-            <Button disabled={!form.target_date || loading} onClick={handleCheckCourts}>Check available courts</Button>
+            <Button disabled={!form.target_date || loading } onClick={handleCheckCourts}>Check available courts</Button>
             {loading && <span className="small">Processing...</span>}
           </div>
           {error && <div className="small" style={{ color: "#b91c1c" }}>{error}</div>}
