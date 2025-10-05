@@ -3,14 +3,16 @@ import Card from "../components/Card";
 import Button from "../components/Button";
 import type { Task } from "../types/task";
 import { apiAvailableCourts, apiStartTask, type StartTaskInput, getErrorMessage } from "../services/api";
+import { loadCreds } from "../utils/storage";
 
 export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => void }) {
-  const [form, setForm] = useState<StartTaskInput>({ username: "@gmail.com", password: "", target_date: "2025-10-01T12:00:00", duration: 120 });
+  const creds = loadCreds();
+  const [form, setForm] = useState<StartTaskInput>({ user_id: creds?.user_id || "", target_date: "2025-10-01T12:00:00", duration: 120 });
   const [loading, setLoading] = useState(false);
   const [courts, setCourts] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const canCreate = !!form.username && !!form.password && !!form.target_date && !!form.duration;
+  const canCreate = !!form.target_date && !!form.duration;
 
   async function handleCreate() {
     if (!canCreate) return;
@@ -54,17 +56,6 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
 
           <div className="grid cols-2">
             <label>
-              <div className="small">Username</div>
-              <input className="input" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
-            </label>
-            <label>
-              <div className="small">Password</div>
-              <input className="input" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
-            </label>
-          </div>
-
-          <div className="grid cols-2">
-            <label>
               <div className="small">Target date (YYYY-MM-DDTHH:mm:ss)</div>
               <input className="input" value={form.target_date} onChange={(e) => setForm({ ...form, target_date: e.target.value })} />
             </label>
@@ -76,7 +67,7 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
 
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <Button variant="primary" disabled={!canCreate || loading} onClick={handleCreate}>{loading ? "Working..." : "Create task"}</Button>
-            <Button disabled={!form.username || !form.password || !form.target_date || loading} onClick={handleCheckCourts}>Check available courts</Button>
+            <Button disabled={!form.target_date || loading} onClick={handleCheckCourts}>Check available courts</Button>
             {loading && <span className="small">Processing...</span>}
           </div>
           {error && <div className="small" style={{ color: "#b91c1c" }}>{error}</div>}

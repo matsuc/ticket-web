@@ -11,12 +11,10 @@ export type Task = {
 };
 
 export type ServerTask = {
-    task_id: string;
+    id: string;
     status: string;
-    progress?: number;
-    title?: string;
-    description?: string;
-    result?: unknown;
+    target_date: string; // YYYY-MM-DDTHH:MM:SS
+    duration: number;
 };
 
-export type Credentials = { username: string; password: string };
+export type Credentials = { user_id: string };

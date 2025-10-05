@@ -30,7 +30,7 @@ export function loadCreds(): Credentials | null {
     const raw = localStorage.getItem(CREDS_KEY);
     if (!raw) return null;
     const obj = JSON.parse(raw) as Credentials;
-    if (obj && typeof obj.username === "string" && typeof obj.password === "string") return obj;
+    if (obj && typeof obj.user_id === "string") return obj;
     return null;
   } catch { return null; }
 }

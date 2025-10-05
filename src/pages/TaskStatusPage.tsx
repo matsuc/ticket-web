@@ -10,7 +10,7 @@ export default function TaskStatusPage({ tasks, onUpdate, onDelete }: { tasks: T
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
   const stats = useMemo(() => {
-    const pending = tasks.filter(t => t.status === "任務不存在或已被取消").length;
+    const pending = tasks.filter(t => t.status === "任務不存在或尚未開始").length;
     const running = tasks.filter(t => t.status === "進行中").length;
     const done = tasks.filter(t => t.status === "完成").length;
     return { pending, running, done };
@@ -60,7 +60,7 @@ export default function TaskStatusPage({ tasks, onUpdate, onDelete }: { tasks: T
                     <span style={{ fontSize: 16, fontWeight: 700, color: "#999" }}>{t.duration}</span>
                     <span style={{ fontSize: 12, border: "1px solid #e5e7eb", padding: "2px 8px", borderRadius: 999 }}>{t.status}</span>
                   </div>
-                  {t.result && <p style={{ margin: "6px 0", color: "#555" }}>{t.result}</p>}
+                  {t.result && <p style={{ margin: "6px 0", color: "#555", whiteSpace: "pre-wrap" }}>{t.result}</p>}
                 </div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <Button onClick={() => refreshOne(t.id)}>

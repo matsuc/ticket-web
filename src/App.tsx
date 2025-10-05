@@ -5,7 +5,8 @@ import ProgressTasksPage from "./pages/ProgressTasksPage";
 import LoginPage from "./pages/LoginPage";
 import type { Task } from "./types/task";
 import { useLocalTasks } from "./hooks/useLocalTasks";
-import { loadCreds } from "./utils/storage";
+import { loadCreds, clearCreds } from "./utils/storage";
+import { apiLogout } from "./services/api";
 
 const PAGES = ["Start task", "Task status", "All progress tasks"] as const;
 type Page = typeof PAGES[number];
@@ -31,6 +32,14 @@ export default function App() {
   }
   function clearAll() {
     if (confirm("This will delete ALL tasks locally (server tasks remain). Continue?")) setTasks([]);
+  }
+  async function logout() {
+    if (confirm("Log out? This will clear local tasks (server tasks remain).")) {
+      try { await apiLogout(); } catch { /* empty */ }
+      setLoggedIn(false);
+      setTasks([]);
+      clearCreds();
+    }
   }
 
   // function handleLogout() {
@@ -75,6 +84,7 @@ export default function App() {
             </button>
           ))}
           <button onClick={clearAll} className="danger">Clear all (local)</button>
+          <button onClick={logout} className="danger">Log out</button>
         </nav>
       </header>
 

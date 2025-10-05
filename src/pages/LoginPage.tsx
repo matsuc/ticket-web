@@ -7,16 +7,16 @@ import { saveCreds, loadCreds } from "../utils/storage";
 
 export default function LoginPage({ onLoggedIn }: { onLoggedIn: () => void }) {
   const existing = loadCreds();
-  const [form, setForm] = useState<LoginInput>({ username: existing?.username || "", password: existing?.password || "" });
+  const [form, setForm] = useState<LoginInput>({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(existing ? `Currently logged in as ${existing.username}` : null);
+  const [msg, setMsg] = useState<string | null>(existing ? `Currently logged in as ${existing.user_id}` : null);
   const [error, setError] = useState<string | null>(null);
 
   async function handleLogin() {
     setLoading(true); setError(null); setMsg(null);
     try {
-      await apiLogin(form);
-      saveCreds({ username: form.username, password: form.password });
+      const { user_id } = await apiLogin(form);
+      saveCreds({ user_id: user_id });
       setMsg(`Logged in as ${form.username}`);
       onLoggedIn();
     } catch (e: unknown) {

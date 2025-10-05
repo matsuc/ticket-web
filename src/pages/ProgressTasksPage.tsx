@@ -4,9 +4,10 @@ import Stat from "../components/Stat";
 import Button from "../components/Button";
 import type { Task } from "../types/task";
 import { apiAllProgressTasks } from "../services/api";
+import type { ServerTask } from "../types/task";
 
 export default function ProgressTasksPage({ tasks, onUpdate }: { tasks: Task[]; onUpdate: (id: string, patch: Partial<Task>) => void }) {
-  const [server, setServer] = useState<{ task_id: string; status: string; title?: string; description?: string }[] | null>(null);
+  const [server, setServer] = useState<ServerTask[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,10 +15,9 @@ export default function ProgressTasksPage({ tasks, onUpdate }: { tasks: Task[]; 
     setLoading(true); setError(null);
     try {
       const list = await apiAllProgressTasks();
-      const mapped = list.map(({ task_id, status }) => ({ task_id, status }));
-      setServer(mapped);
-      // optionally sync local known tasks' status
-      mapped.forEach(item => onUpdate(item.task_id, { status: item.status }));
+      const running = tasks.filter(t => list.some(s => s.id === t.id));
+      console.log(running);
+      setServer(running);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -43,11 +43,11 @@ export default function ProgressTasksPage({ tasks, onUpdate }: { tasks: Task[]; 
         </div>
         <div className="grid" style={{ gap: 12 }}>
           {server?.map(s => (
-            <Card key={s.task_id}>
+            <Card key={s.id}>
               <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap" }}>
-                <div style={{ flex: 1, minWidth: 260 }}>
-                  <div style={{ fontWeight: 700 }}>{s.title || s.task_id}</div>
-                  {s.description && <div className="small" style={{ margin: "6px 0" }}>{s.description}</div>}
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontWeight: 700 }}>{s.target_date}</span>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "#999" }}>{s.duration}</span>
                 </div>
                 <div>
                   <span className="small">Status: </span>
