@@ -94,7 +94,7 @@ export default function App() {
           <TaskStatusPage tasks={tasks} onUpdate={updateTask} onBulk={bulkUpdate} onDelete={deleteTask} />
         )}
         {page === "All progress tasks" && (
-          <ProgressTasksPage tasks={tasks} onUpdate={updateTask} />
+          <ProgressTasksPage tasks={tasks} />
         )}
       </main>
 

@@ -6,7 +6,7 @@ import type { Task } from "../types/task";
 import { apiAllProgressTasks } from "../services/api";
 import type { ServerTask } from "../types/task";
 
-export default function ProgressTasksPage({ tasks, onUpdate }: { tasks: Task[]; onUpdate: (id: string, patch: Partial<Task>) => void }) {
+export default function ProgressTasksPage({ tasks }: { tasks: Task[] }) {
   const [server, setServer] = useState<ServerTask[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +16,6 @@ export default function ProgressTasksPage({ tasks, onUpdate }: { tasks: Task[]; 
     try {
       const list = await apiAllProgressTasks();
       const running = tasks.filter(t => list.some(s => s.id === t.id));
-      console.log(running);
       setServer(running);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e));
