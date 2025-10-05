@@ -10,15 +10,21 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
   const [form, setForm] = useState<StartTaskInput>({ user_id: creds?.user_id || "", target_date: "2025-10-01T12:00:00", duration: 120 });
   const [loading, setLoading] = useState(false);
   const [courts, setCourts] = useState<string[] | null>(null);
-  const [hasCourtsChecked, setHasCourtsChecked] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canCreate = !!form.target_date && !!form.duration && hasCourtsChecked;
+  const canCreate = !!form.target_date && !!form.duration;
 
   async function handleCreate() {
     if (!canCreate) return;
     setLoading(true); setError(null);
     try {
+      await handleCheckCourts();
+      if (courts && courts.length === 0) {
+        setError("No available courts found for the selected date and duration.");
+        setLoading(false);
+        return;
+      }
+
       const { task_id } = await apiStartTask(form);
       const now = Date.now();
       const task: Task = {
@@ -42,7 +48,6 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
     try {
       const res = await apiAvailableCourts(form);
       setCourts(res.available_courts || []);
-      setHasCourtsChecked(res.available_courts && res.available_courts.length > 0);
     } catch (e: unknown) {
       setError(getErrorMessage(e));
     } finally {
