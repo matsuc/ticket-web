@@ -1,5 +1,4 @@
-const BASE = "http://127.0.0.1:5577";
-// https://34-87-17-2.sslip.io
+const BASE = "https://34-87-17-2.sslip.io";
 
 export type StartTaskInput = {
   user_id: string;
