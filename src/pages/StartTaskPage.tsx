@@ -19,7 +19,7 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
     setLoading(true); setError(null);
     try {
       await handleCheckCourts();
-      if (courts && courts.length === 0) {
+      if (!courts || courts.length === 0) {
         setError("No available courts found for the selected date and duration.");
         setLoading(false);
         return;
