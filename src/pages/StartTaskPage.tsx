@@ -18,8 +18,8 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
     if (!canCreate) return;
     setLoading(true); setError(null);
     try {
-      await handleCheckCourts();
-      if (!courts || courts.length === 0) {
+      const available = await handleCheckCourts();
+      if (!available || available.length === 0) {
         setError("No available courts found for the selected date and duration.");
         setLoading(false);
         return;
@@ -47,9 +47,12 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
     setLoading(true); setError(null); setCourts(null);
     try {
       const res = await apiAvailableCourts(form);
-      setCourts(res.available_courts || []);
+      const available = res.available_courts || [];
+      setCourts(available);
+      return available;
     } catch (e: unknown) {
       setError(getErrorMessage(e));
+      return [];
     } finally {
       setLoading(false);
     }
