@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/auth/login",          "destination": "https://34-87-17-2.sslip.io/auth/login" },
+    { "source": "/auth/logout",         "destination": "https://34-87-17-2.sslip.io/auth/logout" },
+    { "source": "/start_task",          "destination": "https://34-87-17-2.sslip.io/start_task" },
+    { "source": "/task_status/:id",     "destination": "https://34-87-17-2.sslip.io/task_status/:id" },
+    { "source": "/delete_task/:id",     "destination": "https://34-87-17-2.sslip.io/delete_task/:id" },
+    { "source": "/all_progress_tasks",  "destination": "https://34-87-17-2.sslip.io/all_progress_tasks" },
+    { "source": "/available_courts",    "destination": "https://34-87-17-2.sslip.io/available_courts" }
+  ]
+}
