@@ -70,12 +70,12 @@ export async function apiDeleteTask(task_id: string): Promise<void> {
 }
 
 export async function apiAllProgressTasks(): Promise<
-  Array<{ id: string }>
+  { progress_tasks: Array<{ id: string }>; pending_tasks: Array<{ id: string }> }
 > {
   const res = await fetch(`${BASE}/all_progress_tasks`);
   if (!res.ok) throw new Error(`all_progress_tasks failed: ${res.status}`);
   const data = await res.json();
-  return data.progress_tasks;
+  return { progress_tasks: data.progress_tasks, pending_tasks: data.pending_tasks };
 }
 
 export async function apiAvailableCourts(

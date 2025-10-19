@@ -14,9 +14,10 @@ export default function ProgressTasksPage({ tasks }: { tasks: Task[] }) {
   async function refreshServer() {
     setLoading(true); setError(null);
     try {
-      const list = await apiAllProgressTasks();
-      const running = tasks.filter(t => list.some(s => s.id === t.id));
-      setServer(running);
+      const {progress_tasks, pending_tasks} = await apiAllProgressTasks();
+      const running = tasks.filter(t => progress_tasks.some(s => s.id === t.id));
+      const pending = tasks.filter(t => pending_tasks.some(s => s.id === t.id));
+      setServer(running.concat(pending));
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
