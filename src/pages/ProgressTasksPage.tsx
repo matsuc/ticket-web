@@ -48,7 +48,7 @@ export default function ProgressTasksPage({ tasks }: { tasks: Task[] }) {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontWeight: 700 }}>{s.target_date}</span>
                   <span style={{ fontSize: 16, fontWeight: 700, color: "#999" }}>{s.duration}</span>
-                  <span style={{ fontSize: 12, border: "1px solid #e5e7eb", padding: "2px 8px", borderRadius: 999 }}>{t.status}</span>
+                  <span style={{ fontSize: 12, border: "1px solid #e5e7eb", padding: "2px 8px", borderRadius: 999 }}>{s.status}</span>
                 </div>
               </div>
             </Card>
