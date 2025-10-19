@@ -34,13 +34,14 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
     if (!canCreate) return;
     setLoading(true); setError(null);
     try {
+      console.log(form);
+
       const available = await handleCheckCourts();
       if (!available || available.length === 0) {
         setError("No available courts found for the selected date and duration.");
         setLoading(false);
         return;
       }
-      console.log(form);
 
       const { task_id } = await apiStartTask(form);
       const now = Date.now();
@@ -93,14 +94,16 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
               />
             </label>
 
-            {/* 時間 */}
             <label>
               <div className="small">Time</div>
               <input
                 type="time"
+                lang="en-GB"
+                step="3600"
                 className="input"
+                min="10:00"
+                max="21:00"
                 value={form.time}
-                step="3600" // 一小時 = 3600 秒
                 onChange={(e) => setForm({ ...form, time: e.target.value })}
               />
             </label>
