@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import type { Task } from "../types/task";
@@ -7,12 +7,28 @@ import { loadCreds } from "../utils/storage";
 
 export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => void }) {
   const creds = loadCreds();
-  const [form, setForm] = useState<StartTaskInput>({ user_id: creds?.user_id || "", target_date: "2025-10-01T12:00:00", duration: 120 });
+  const [form, setForm] = useState<StartTaskInput & { date: string; time: string }>({
+    user_id: creds?.user_id || "",
+    target_date: "2025-10-01T12:00:00",
+    date: "2025-10-01",
+    time: "12",
+    duration: 120,
+  });
   const [loading, setLoading] = useState(false);
   const [courts, setCourts] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const canCreate = !!form.target_date && !!form.duration;
+
+
+  useEffect(() => {
+    if (form.date && form.time) {
+      setForm((prev) => ({
+        ...prev,
+        target_date: `${form.date}T${form.time}:00`,
+      }));
+    }
+  }, [form.date, form.time]);
 
   async function handleCreate() {
     if (!canCreate) return;
@@ -24,6 +40,7 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
         setLoading(false);
         return;
       }
+      console.log(form);
 
       const { task_id } = await apiStartTask(form);
       const now = Date.now();
@@ -65,13 +82,40 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
         <div className="grid" style={{ gap: 10, maxWidth: 900 }}>
 
           <div className="grid cols-2">
+            {/* 日期選擇 */}
             <label>
-              <div className="small">Target date (YYYY-MM-DDTHH:mm:ss)</div>
-              <input className="input" value={form.target_date} onChange={(e) => setForm({ ...form, target_date: e.target.value })} />
+              <div className="small">Date</div>
+              <input
+                type="date"
+                className="input"
+                value={form.date}
+                onChange={(e) => setForm({ ...form, date: e.target.value })}
+              />
             </label>
+
+            {/* 時間 */}
             <label>
-              <div className="small">Duration</div>
-              <input className="input" type="number" min={1} value={form.duration} onChange={(e) => setForm({ ...form, duration: Number(e.target.value) || 0 })} />
+              <div className="small">Time</div>
+              <input
+                type="time"
+                className="input"
+                value={form.time}
+                step="3600" // 一小時 = 3600 秒
+                onChange={(e) => setForm({ ...form, time: e.target.value })}
+              />
+            </label>
+
+            {/* Duration 下拉選單 */}
+            <label>
+              <div className="small">Duration (minutes)</div>
+              <select
+                className="input"
+                value={form.duration}
+                onChange={(e) => setForm({ ...form, duration: Number(e.target.value) })}
+              >
+                <option value={60}>60</option>
+                <option value={120}>120</option>
+              </select>
             </label>
           </div>
 
