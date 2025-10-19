@@ -11,7 +11,7 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
     user_id: creds?.user_id || "",
     target_date: "2025-10-01T12:00:00",
     date: "2025-10-01",
-    time: "12",
+    time: "12:00",
     duration: 120,
   });
   const [loading, setLoading] = useState(false);
@@ -94,18 +94,23 @@ export default function StartTaskPage({ onCreate }: { onCreate: (t: Task) => voi
               />
             </label>
 
+            {/* 時間（10:00～21:00） */}
             <label>
               <div className="small">Time</div>
-              <input
-                type="time"
-                lang="en-GB"
-                step="3600"
+              <select
                 className="input"
-                min="10:00"
-                max="21:00"
                 value={form.time}
                 onChange={(e) => setForm({ ...form, time: e.target.value })}
-              />
+              >
+                {Array.from({ length: 12 }, (_, i) => {
+                  const hour = (i + 10).toString().padStart(2, "0"); // 10~21
+                  return (
+                    <option key={hour} value={`${hour}:00`}>
+                      {hour}:00
+                    </option>
+                  );
+                })}
+              </select>
             </label>
 
             {/* Duration 下拉選單 */}
